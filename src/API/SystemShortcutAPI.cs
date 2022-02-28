@@ -1,6 +1,9 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -35,6 +38,11 @@ namespace COM3D2API
                 CreateButton(name, onClickEvent, tooltipText, textureBytes);
             else
                 ButtonsToCreate.Add(new ButtonData(name, onClickEvent, tooltipText, textureBytes));
+        }
+
+        public static void AddButton(string name, Action onClickEvent, string tooltipText, Bitmap images = null)
+        {
+            AddButton(name, onClickEvent, tooltipText, ExtractResource(images));
         }
 
         /// <summary>
@@ -86,6 +94,20 @@ namespace COM3D2API
             {
                 //Catch and show the error manually so errors in a single plugin don't break all the others
                 Debug.LogException(ex);
+            }
+        }
+
+        private static void CreateButton(string name, Action onClickEvent, string tooltipText, Bitmap images)
+        {
+            CreateButton(name, onClickEvent, tooltipText, ExtractResource(images));
+        }
+
+        public static byte[] ExtractResource(Bitmap image)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                image.Save(ms, ImageFormat.Png);
+                return ms.ToArray();
             }
         }
 
